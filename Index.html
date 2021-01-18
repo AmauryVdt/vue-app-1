@@ -3,8 +3,108 @@
 <head>
   <meta charset="UTF-8">
   <title>Toilet.io</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 </head>
 <body>
+
+<div id="app" class="container">
+
+  <br><br>
+
+  <div class="container">
+
+    <img alt="toilet" src="images/wall-3087292_1920.jpg" height="384.6" width="576"/>
+
+    <br><br>
+
+    <h1>Welcome to Find Your Toilet ! (France)</h1>
+
+  </div>
+
+  <br><br>
+
+  <div class="mb-3">
+    <label for="exampleFormControlInput1" class="form-label">Your city</label>
+    <input v-on:keyup="fetchData()" type="text" class="form-control" id="exampleFormControlInput1" placeholder="your city" list="cities" v-model="city">
+    <datalist id="cities">
+      <option v-for="city in cities" :key="city">{{city}}</option>
+    </datalist>
+  </div>
+
+  <br><br>
+
+  <div>
+
+    <table class="table">
+      <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Nom</th>
+        <th scope="col">Pôle</th>
+        <th scope="col">Commune</th>
+        <th scope="col">Adresse</th>
+        <th scope="col">Horaire</th>
+        <th scope="col">PMR</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr  v-for="toilet in toilets" :key="toilet.last_name" >
+        <th scope="row">{{toilets.indexOf(toilet) + 1}}</th>
+        <td>{{toilet.fields.nom}}</td>
+        <td>{{toilet.fields.pole}}</td>
+        <td>{{toilet.fields.commune}}</td>
+        <td>{{toilet.fields.adresse_2}}</td>
+        <td>{{toilet.fields.horaire_d_ouverture}}</td>
+        <td>{{toilet.fields.accessible_pmr}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+<!--  <pre>{{toilets}}</pre>-->
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+
+  const apiURLWithCommune = "https://data.nantesmetropole.fr/api/records/1.0/search/?dataset=244400404_toilettes-publiques-nantes-metropole&q=&rows=20&facet=pole&facet=commune&facet=type&facet=automatique&refine.commune="//&q=&facet=pole&facet=commune&facet=type&facet=automatique"
+  const apiURL = "https://data.nantesmetropole.fr/api/records/1.0/search/?dataset=244400404_toilettes-publiques-nantes-metropole&q=&rows=20&facet=pole&facet=commune&facet=type&facet=automatique&r&q=&facet=pole&facet=commune&facet=type&facet=automatique"
+
+  var app = new Vue({
+    el: '#app',
+    data: {
+      cities: [
+        "Basse-Goulaine", "Bouaye", "Bouguenais", "Brains", "Carquefou", "Couëron", "Indre"
+        , "La Chapelle-sur-Erdre", "La Montagne", "Le Pellerin", "Les Sorinières", "Mauves-sur-Loire"
+        , "Nantes", "Orvault", "Rezé", "Saint-Herblain", "Saint-Jean-de-Boiseau", "Saint-Léger-les-Vignes"
+        , "Saint-Sébastien-sur-Loire", "Sainte-Luce-sur-Loire", "Sautron", "St-Aignan-Grandlieu"
+        , "Thouaré-sur-Loire", "Vertou"
+      ],
+      toilets: [],
+      city: "Nantes"
+    },
+    created: function () {
+      this.fetchData()
+    },
+    methods: {
+      fetchData: async function () {
+        try {
+          if (this.cities.find(c => c === this.city)) {
+            const response = await axios.get(apiURLWithCommune + this.city)
+            this.toilets = response.data.records
+          } else {
+            const response = await axios.get(apiURL)
+            this.toilets = response.data.records
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+  })
+</script>
 
 </body>
 </html>
